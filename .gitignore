@@ -1,0 +1,16 @@
+# Dependencies & build output
+node_modules/
+dist/
+web/node_modules/
+web/dist/
+web/test-results/
+web/playwright-report/
+
+# Env & local
+.env
+.env.*
+*.local
+
+# OS / editor
+.DS_Store
+*.log

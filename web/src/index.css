@@ -1,0 +1,162 @@
+@import "tailwindcss";
+
+/*
+  Design tokens — WCAG 2.2 AAA targeted.
+  Runtime theming: semantic Tailwind colors point at CSS vars (@theme inline),
+  which are overridden per [data-theme]. Contrast for body text targets >= 7:1.
+*/
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-raised: var(--raised);
+  --color-overlay: var(--overlay);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-positive: var(--positive);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-ring: var(--ring);
+
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.875rem;
+
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+:root {
+  --bg: #ffffff;
+  --surface: #f4f6fa;
+  --raised: #ffffff;
+  --overlay: rgba(8, 12, 20, 0.55);
+  --fg: #14171c;        /* ~16:1 on white */
+  --muted: #44474e;     /* ~8.5:1 on white (AAA normal text) */
+  --border: #c7cdd6;
+  --accent: #0b5394;    /* white text on accent ~7.1:1 */
+  --accent-fg: #ffffff;
+  --positive: #1f6b3b;
+  --warning: #7a4f00;
+  --danger: #9b1c1c;
+  --ring: #0b5394;
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --bg: #0b0e14;
+  --surface: #141a26;
+  --raised: #1b2331;
+  --overlay: rgba(0, 0, 0, 0.66);
+  --fg: #f2f5f9;        /* ~15:1 on bg */
+  --muted: #c4ccd8;     /* AAA on dark */
+  --border: #2c3447;
+  --accent: #7fb2ff;    /* dark text on accent */
+  --accent-fg: #0b0e14;
+  --positive: #6ee7a0;
+  --warning: #ffcf6b;
+  --danger: #ff9b9b;
+  --ring: #7fb2ff;
+  color-scheme: dark;
+}
+
+[data-theme="high-contrast"] {
+  --bg: #000000;
+  --surface: #000000;
+  --raised: #0a0a0a;
+  --overlay: rgba(0, 0, 0, 0.85);
+  --fg: #ffffff;
+  --muted: #ffffff;
+  --border: #ffffff;
+  --accent: #ffff00;
+  --accent-fg: #000000;
+  --positive: #00ff8c;
+  --warning: #ffd400;
+  --danger: #ff6b6b;
+  --ring: #ffff00;
+  color-scheme: dark;
+}
+
+html {
+  font-size: 100%;
+} /* 1rem = 16px base */
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: 1rem; /* enforced minimum text size */
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Visible, AAA-strong focus indicator everywhere */
+*:focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/* Honor reduced-motion: collapse animations/transitions */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Minimum interactive target size (AAA 2.5.5 = 44px) */
+.target {
+  min-block-size: 2.75rem;
+  min-inline-size: 2.75rem;
+}
+
+/* Skip link */
+.skip-link {
+  position: absolute;
+  left: 0.5rem;
+  top: -3rem;
+  z-index: 100;
+  background: var(--accent);
+  color: var(--accent-fg);
+  padding: 0.5rem 0.875rem;
+  border-radius: var(--radius-md);
+  transition: top 0.15s ease;
+}
+.skip-link:focus {
+  top: 0.5rem;
+}
+
+/* Shimmer skeleton — a soft sheen sweeps left-to-right across a surface-toned
+   base. The sheen is mixed from --fg, so it adapts to every theme (a light
+   sweep on dark surfaces, a darker sweep on light ones). The global
+   prefers-reduced-motion rule above neutralizes the sweep; the solid surface
+   background then remains as a calm, static placeholder. */
+@keyframes aura-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+.shimmer {
+  background-color: var(--surface);
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--fg) 9%, transparent) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+  animation: aura-shimmer 1.4s linear infinite;
+}
