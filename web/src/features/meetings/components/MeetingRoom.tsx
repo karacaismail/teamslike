@@ -4,6 +4,7 @@ import { Record, Sparkle } from "@/lib/icons";
 import { useMeetingStore } from "../store";
 import { Stage } from "./Stage";
 import { ControlBar } from "./ControlBar";
+import { MeetingTopActions } from "./MeetingTopActions";
 import { SidePanel } from "./SidePanel";
 import { HostPanel } from "./HostPanel";
 import { EngagePanel } from "./EngagePanel";
@@ -57,15 +58,17 @@ export function MeetingRoom() {
               {t("meetings.rec")} {fmt(s.recordSec)}
             </span>
           ) : null}
-          <span className="ml-auto text-base text-muted">
-            {t("meetings.participantCount", { n: s.participants.length })}
-          </span>
-          {s.aiCompanion ? (
-            <span className="inline-flex items-center gap-1 text-base text-accent">
-              <Sparkle size={14} weight="fill" aria-hidden />
-              {t("meetings.aiCompanionShort")}
-            </span>
-          ) : null}
+          <div className="ml-auto flex items-center gap-2">
+            {s.aiCompanion ? (
+              <span className="hidden items-center gap-1 text-base text-accent sm:inline-flex">
+                <Sparkle size={14} weight="fill" aria-hidden />
+                {t("meetings.aiCompanionShort")}
+              </span>
+            ) : null}
+            {/* Options (recording, view, AI, panels, host) live here, separate
+                from the live controls in the bottom bar. */}
+            <MeetingTopActions />
+          </div>
         </div>
 
         {/* Lobby banner */}

@@ -9,20 +9,10 @@ import {
   Monitor,
   Hand,
   Smiley,
-  ClosedCaptioning,
-  Record,
-  SquaresFour,
-  Users,
-  ChatCircle,
   PhoneDisconnect,
-  Sparkle,
-  ShieldCheck,
-  ChartBar,
-  ChalkboardSimple,
 } from "@/lib/icons";
 import { useMeetingStore } from "../store";
 import { MEETING_REACTIONS } from "../types";
-import { useAskCopilot } from "@/lib/useCopilot";
 import { useToastStore } from "@/store/toastStore";
 import { cn } from "@/lib/cn";
 
@@ -45,7 +35,7 @@ const RoundBtn = React.forwardRef<
     title={label}
     onClick={onClick}
     className={cn(
-      "inline-flex h-12 w-12 items-center justify-center rounded-full transition-colors",
+      "inline-flex h-12 w-12 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
       tone === "danger"
         ? "bg-danger text-white hover:opacity-90"
         : tone === "active"
@@ -58,16 +48,16 @@ const RoundBtn = React.forwardRef<
 ));
 RoundBtn.displayName = "RoundBtn";
 
+/**
+ * Live meeting CONTROLS only — mic, camera, screen share, raise hand,
+ * reactions, and leave. Secondary OPTIONS (captions, recording, layout,
+ * whiteboard, stats, panels, host) live in the top bar's options menu
+ * (MeetingTopActions), so this strip stays short and thumb-reachable on mobile.
+ */
 export function ControlBar() {
   const { t } = useTranslation();
   const s = useMeetingStore();
-  const ask = useAskCopilot();
   const push = useToastStore((x) => x.push);
-  const self = s.participants.find((p) => p.isSelf);
-  const isHost = self?.role === "host" || self?.role === "cohost";
-
-  const panel = (tab: "participants" | "chat") =>
-    s.setSidePanel(s.sidePanel === tab ? "none" : tab);
 
   const leave = () => {
     const aiOn = s.aiCompanion;
@@ -139,84 +129,6 @@ export function ControlBar() {
           </Menu.Content>
         </Menu.Portal>
       </Menu.Root>
-
-      <span className="mx-1 hidden h-8 w-px bg-border sm:block" aria-hidden />
-
-      <RoundBtn
-        label={t("meetings.captions")}
-        tone={s.captionsOn ? "active" : "default"}
-        pressed={s.captionsOn}
-        onClick={s.toggleCaptions}
-      >
-        <ClosedCaptioning size={22} aria-hidden />
-      </RoundBtn>
-
-      <RoundBtn
-        label={s.recording ? t("meetings.stopRecording") : t("meetings.record")}
-        tone={s.recording ? "danger" : "default"}
-        pressed={s.recording}
-        onClick={s.toggleRecording}
-      >
-        <Record size={22} aria-hidden weight={s.recording ? "fill" : "regular"} />
-      </RoundBtn>
-
-      <RoundBtn
-        label={t("meetings.layout")}
-        onClick={() => s.setLayout(s.layout === "grid" ? "speaker" : "grid")}
-      >
-        <SquaresFour size={22} aria-hidden />
-      </RoundBtn>
-
-      <RoundBtn label={t("meetings.aiNotes")} onClick={() => ask(t("meetings.ai.notes"), s.activeTitle)}>
-        <Sparkle size={22} aria-hidden />
-      </RoundBtn>
-
-      <RoundBtn
-        label={t("meetings.engage")}
-        tone={s.sidePanel === "engage" ? "active" : "default"}
-        pressed={s.sidePanel === "engage"}
-        onClick={() => s.setSidePanel(s.sidePanel === "engage" ? "none" : "engage")}
-      >
-        <ChartBar size={22} aria-hidden />
-      </RoundBtn>
-
-      <RoundBtn
-        label={t("meetings.whiteboard")}
-        tone={s.whiteboardOpen ? "active" : "default"}
-        pressed={s.whiteboardOpen}
-        onClick={s.toggleWhiteboard}
-      >
-        <ChalkboardSimple size={22} aria-hidden />
-      </RoundBtn>
-
-      <RoundBtn
-        label={t("meetings.participants")}
-        tone={s.sidePanel === "participants" ? "active" : "default"}
-        pressed={s.sidePanel === "participants"}
-        onClick={() => panel("participants")}
-      >
-        <Users size={22} aria-hidden />
-      </RoundBtn>
-
-      <RoundBtn
-        label={t("meetings.chat")}
-        tone={s.sidePanel === "chat" ? "active" : "default"}
-        pressed={s.sidePanel === "chat"}
-        onClick={() => panel("chat")}
-      >
-        <ChatCircle size={22} aria-hidden />
-      </RoundBtn>
-
-      {isHost ? (
-        <RoundBtn
-          label={t("meetings.hostControls")}
-          tone={s.sidePanel === "host" ? "active" : "default"}
-          pressed={s.sidePanel === "host"}
-          onClick={() => s.setSidePanel(s.sidePanel === "host" ? "none" : "host")}
-        >
-          <ShieldCheck size={22} aria-hidden />
-        </RoundBtn>
-      ) : null}
 
       <span className="mx-1 hidden h-8 w-px bg-border sm:block" aria-hidden />
 

@@ -6,6 +6,8 @@
  */
 export type MeetingPhase = "idle" | "prejoin" | "in";
 export type MeetingLayout = "grid" | "speaker";
+/** Where the participant filmstrip sits in speaker/screen-share view. */
+export type StripPos = "bottom" | "top" | "left" | "right";
 /** "viewer" = view-only (no cam/mic/present) — Google Meet "Everyone is a viewer". */
 export type ParticipantRole = "host" | "cohost" | "attendee" | "viewer";
 export type SidePanelTab = "none" | "participants" | "chat" | "captions" | "host" | "engage";

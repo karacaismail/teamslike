@@ -29,6 +29,7 @@ import type {
   RemoteControl,
   ResolutionLevel,
   SidePanelTab,
+  StripPos,
   VideoRoom,
 } from "./types";
 
@@ -123,6 +124,7 @@ interface MeetingState {
   dataSaver: boolean;
 
   layout: MeetingLayout;
+  stripPos: StripPos;
   sidePanel: SidePanelTab;
   recording: boolean;
   recordSec: number;
@@ -205,6 +207,7 @@ interface MeetingState {
   clearBreakoutTimer: () => void;
   toggleMeetFx: (key: MeetFx) => void;
   setLayout: (l: MeetingLayout) => void;
+  setStripPos: (p: StripPos) => void;
   setSidePanel: (t: SidePanelTab) => void;
   toggleRecording: () => void;
   toggleCaptions: () => void;
@@ -288,6 +291,7 @@ export const useMeetingStore = create<MeetingState>((set, get) => ({
   dataSaver: false,
 
   layout: "grid",
+  stripPos: "bottom",
   sidePanel: "none",
   recording: false,
   recordSec: 0,
@@ -535,6 +539,7 @@ export const useMeetingStore = create<MeetingState>((set, get) => ({
   clearBreakoutTimer: () => set({ breakoutEndsAt: null }),
   toggleMeetFx: (key) => set((s) => ({ [key]: !s[key] }) as Partial<MeetingState>),
   setLayout: (layout) => set({ layout }),
+  setStripPos: (stripPos) => set({ stripPos }),
   setSidePanel: (sidePanel) => set({ sidePanel }),
   toggleRecording: () => set((s) => ({ recording: !s.recording, recordSec: 0 })),
   toggleCaptions: () => set((s) => ({ captionsOn: !s.captionsOn })),

@@ -1,9 +1,10 @@
+import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { MicrophoneSlash, Hand, Monitor, PushPin } from "@/lib/icons";
+import { MicrophoneSlash, Hand, Monitor, PushPin, CaretUp, CaretDown, CaretLeft, CaretRight } from "@/lib/icons";
 import { useMeetingStore } from "../store";
 import { Avatar } from "@/components/ui/Avatar";
 import { cn } from "@/lib/cn";
-import type { ConnectionQuality, Participant } from "../types";
+import type { ConnectionQuality, Participant, StripPos } from "../types";
 
 const qualityTone: Record<ConnectionQuality, string> = {
   good: "bg-positive",
@@ -64,15 +65,78 @@ function Tile({
   );
 }
 
-function Filmstrip({ items }: { items: Participant[] }) {
+function Filmstrip({ items, vertical }: { items: Participant[]; vertical?: boolean }) {
   const { activeSpeakerId } = useMeetingStore();
   return (
-    <div className="flex gap-2 overflow-x-auto">
+    <div
+      className={cn(
+        "gap-2",
+        vertical ? "flex w-44 shrink-0 flex-col overflow-y-auto" : "flex overflow-x-auto",
+      )}
+    >
       {items.map((p) => (
-        <div key={p.id} className="w-40 shrink-0">
+        <div key={p.id} className={cn("shrink-0", vertical ? "w-full" : "w-40")}>
           <Tile p={p} speaking={p.id === activeSpeakerId && p.micOn} />
         </div>
       ))}
+    </div>
+  );
+}
+
+const STRIP_POSITIONS: { pos: StripPos; Icon: typeof CaretUp }[] = [
+  { pos: "top", Icon: CaretUp },
+  { pos: "bottom", Icon: CaretDown },
+  { pos: "left", Icon: CaretLeft },
+  { pos: "right", Icon: CaretRight },
+];
+
+/** Clear, labelled switcher: an arrow + the position name, with the active one
+ *  highlighted, so it's obvious where the participant strip will move. */
+function StripSwitcher() {
+  const { t } = useTranslation();
+  const stripPos = useMeetingStore((s) => s.stripPos);
+  const setStripPos = useMeetingStore((s) => s.setStripPos);
+  return (
+    <div
+      className="absolute right-3 top-3 z-10 flex items-center gap-1 rounded-lg bg-overlay p-1 text-white"
+      role="group"
+      aria-label={t("meetings.stripPosLabel")}
+    >
+      {STRIP_POSITIONS.map(({ pos, Icon }) => (
+        <button
+          key={pos}
+          type="button"
+          aria-label={t(`meetings.stripPos.${pos}`)}
+          aria-pressed={stripPos === pos}
+          title={t(`meetings.stripPos.${pos}`)}
+          onClick={() => setStripPos(pos)}
+          className={cn(
+            "inline-flex h-8 items-center gap-1 rounded-md px-2 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+            stripPos === pos ? "bg-accent text-accent-fg" : "hover:bg-white/15",
+          )}
+        >
+          <Icon size={16} aria-hidden />
+          <span className="hidden sm:inline">{t(`meetings.stripPos.${pos}`)}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/** Big main view + a participant filmstrip that can sit on any edge (top /
+ *  bottom / left / right), plus the position switcher. */
+function SpeakerStage({ main, others }: { main: ReactNode; others: Participant[] }) {
+  const stripPos = useMeetingStore((s) => s.stripPos);
+  const vertical = stripPos === "left" || stripPos === "right";
+  const stripFirst = stripPos === "top" || stripPos === "left";
+  const strip = others.length > 0 ? <Filmstrip items={others} vertical={vertical} /> : null;
+
+  return (
+    <div className={cn("relative flex h-full gap-3 p-3", vertical ? "flex-row" : "flex-col")}>
+      <StripSwitcher />
+      {stripFirst ? strip : null}
+      <div className="min-h-0 min-w-0 flex-1">{main}</div>
+      {!stripFirst ? strip : null}
     </div>
   );
 }
@@ -98,14 +162,7 @@ export function Stage() {
 
   if (screenSharing) {
     const presenter = participants.find((p) => p.screenSharing) ?? participants[0];
-    return (
-      <div className="flex h-full flex-col gap-3 p-3">
-        <div className="min-h-0 flex-1">
-          <ScreenShareView presenter={presenter} />
-        </div>
-        <Filmstrip items={participants} />
-      </div>
-    );
+    return <SpeakerStage main={<ScreenShareView presenter={presenter} />} others={participants} />;
   }
 
   // Spotlight or speaker layout → one big tile + filmstrip
@@ -113,12 +170,7 @@ export function Stage() {
     const main = spot ?? participants.find((p) => p.id === activeSpeakerId) ?? participants[0];
     const others = participants.filter((p) => p.id !== main.id);
     return (
-      <div className="flex h-full flex-col gap-3 p-3">
-        <div className="min-h-0 flex-1">
-          <Tile p={main} speaking={main.micOn} big spotlighted={!!spot} />
-        </div>
-        <Filmstrip items={others} />
-      </div>
+      <SpeakerStage main={<Tile p={main} speaking={main.micOn} big spotlighted={!!spot} />} others={others} />
     );
   }
 
