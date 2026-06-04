@@ -22,6 +22,12 @@ jobs:
         working-directory: web
     steps:
       - uses: actions/checkout@v4
+      # Auto-enable Pages (source = GitHub Actions) for this and any future repo,
+      # so no manual Settings/`gh api` step is ever needed.
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
       - uses: actions/setup-node@v4
         with:
           node-version: 22
