@@ -110,6 +110,16 @@ body {
   border-radius: 3px;
 }
 
+/* Form fields focus with a clean ring that HUGS the field (rounded, no offset),
+   instead of the detached offset outline above — that read as a stray "border"
+   appearing on click. Still fully visible for accessibility. */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--ring);
+}
+
 /* Honor reduced-motion: collapse animations/transitions */
 @media (prefers-reduced-motion: reduce) {
   *,

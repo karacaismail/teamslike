@@ -45,6 +45,9 @@ const AiCanvasPage = lazy(() =>
 const AdminConsole = lazy(() =>
   import("@/features/admin/AdminConsole").then((m) => ({ default: m.AdminConsole })),
 );
+const ProfilePage = lazy(() =>
+  import("@/features/profile/ProfilePage").then((m) => ({ default: m.ProfilePage })),
+);
 
 // Implemented domains ship their full feature slice; others use the generic
 // preview page until their phase lands.
@@ -81,6 +84,7 @@ export const router = createBrowserRouter(
       { path: "canvas", element: <AiCanvasPage /> },
       { path: "admin", element: <AdminConsole /> },
       { path: "members", element: <MembersPage /> },
+      { path: "profile", element: <ProfilePage /> },
       ...domainChildren,
     ],
   },

@@ -5,6 +5,7 @@ import { List, X } from "@/lib/icons";
 import { DOMAINS } from "@/data/domains";
 import { useAuthStore } from "@/store/authStore";
 import { PrimaryNav } from "./PrimaryNav";
+import { AccountMenu } from "./AccountMenu";
 import { cn } from "@/lib/cn";
 
 /** How many domains sit directly on the bottom bar; the rest move into "More". */
@@ -61,6 +62,9 @@ export function MobileNav() {
             <div onClick={() => setMoreOpen(false)}>
               <PrimaryNav />
             </div>
+            {/* Account/profile + sign-out also reachable on mobile (sidebar is
+                hidden here). Closes the sheet on navigate. */}
+            <AccountMenu onNavigate={() => setMoreOpen(false)} />
           </div>
         </div>
       ) : null}

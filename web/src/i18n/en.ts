@@ -172,6 +172,14 @@ export const en = {
     retry: "Retry",
     widget: "This section couldn't load.",
   },
+  profile: {
+    settings: "Settings",
+    appearance: "Appearance",
+    accent: "Accent colour",
+    accentDefault: "Default",
+    pickColor: "Accent colour {{name}}",
+    roleLocked: "Your role is {{role}}. Only admins can change roles.",
+  },
   notif: {
     empty: "You're all caught up",
     markAllRead: "Mark all read",

@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { TopBar } from "./TopBar";
 import { PrimaryNav } from "./PrimaryNav";
 import { MobileNav } from "./MobileNav";
+import { AccountMenu } from "./AccountMenu";
 import { CopilotDock } from "./CopilotDock";
 import { CommandPalette } from "./CommandPalette";
 import { UnsavedNavGuard } from "./UnsavedNavGuard";
@@ -14,6 +15,7 @@ import { ActiveCallBar } from "@/features/telephony/components/ActiveCallBar";
 import { useUIStore } from "@/store/uiStore";
 import { useTenantStore } from "@/store/tenantStore";
 import { MOCK_TENANTS } from "@/lib/mockData";
+import { readableOn } from "@/lib/themeColors";
 
 export function AppShell() {
   const { t, i18n } = useTranslation();
@@ -22,6 +24,7 @@ export function AppShell() {
   const density = useUIStore((s) => s.density);
   const locale = useUIStore((s) => s.locale);
   const copilotOpen = useUIStore((s) => s.copilotOpen);
+  const accentColor = useUIStore((s) => s.accentColor);
   const togglePalette = useUIStore((s) => s.togglePalette);
   const tenantId = useTenantStore((s) => s.tenantId);
 
@@ -38,19 +41,23 @@ export function AppShell() {
     if (i18n.language !== locale) void i18n.changeLanguage(locale);
   }, [locale, i18n]);
 
-  // Tenant branding → live accent (light theme only; dark/high-contrast keep
-  // their AAA palettes).
+  // Live accent: the user's chosen colour wins (Profile → Appearance); else the
+  // tenant's brand accent (light theme only). Text colour on the accent is
+  // computed for legibility so even bright picks stay readable.
   React.useEffect(() => {
     const tenant = MOCK_TENANTS.find((x) => x.id === tenantId);
     const root = document.documentElement;
-    if (tenant && theme === "light") {
-      root.style.setProperty("--accent", tenant.branding.accent);
-      root.style.setProperty("--ring", tenant.branding.accent);
+    const accent = accentColor ?? (tenant && theme === "light" ? tenant.branding.accent : null);
+    if (accent) {
+      root.style.setProperty("--accent", accent);
+      root.style.setProperty("--ring", accent);
+      root.style.setProperty("--accent-fg", readableOn(accent));
     } else {
       root.style.removeProperty("--accent");
       root.style.removeProperty("--ring");
+      root.style.removeProperty("--accent-fg");
     }
-  }, [tenantId, theme]);
+  }, [tenantId, theme, accentColor]);
 
   React.useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -73,9 +80,14 @@ export function AppShell() {
         <div className="flex min-h-0 flex-1">
           <aside
             data-testid="desktop-sidebar"
-            className="hidden w-64 shrink-0 border-r border-border bg-raised md:block"
+            className="hidden w-64 shrink-0 flex-col border-r border-border bg-raised md:flex"
           >
-            <PrimaryNav />
+            <div className="min-h-0 flex-1 overflow-y-auto">
+              <PrimaryNav />
+            </div>
+            {/* Account/profile lives at the BOTTOM-LEFT (Slack/Linear pattern),
+                not the top-right. See DESIGN-DECISIONS.md. */}
+            <AccountMenu />
           </aside>
           <main id="main" tabIndex={-1} className="min-w-0 flex-1 overflow-y-auto bg-bg pb-16 md:pb-0">
             {/* Keyed by route so a render error on one page is isolated to the

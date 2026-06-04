@@ -10,6 +10,8 @@ interface UIState {
   theme: Theme;
   density: Density;
   locale: Locale;
+  /** User-chosen accent colour (hex). null = theme/tenant default. */
+  accentColor: string | null;
   paletteOpen: boolean;
   copilotOpen: boolean;
   /** Per-surface unsaved-work flags (J6). Drives the in-app nav guard. */
@@ -17,6 +19,7 @@ interface UIState {
   setTheme: (t: Theme) => void;
   setDensity: (d: Density) => void;
   setLocale: (l: Locale) => void;
+  setAccentColor: (c: string | null) => void;
   togglePalette: () => void;
   setPaletteOpen: (open: boolean) => void;
   toggleCopilot: () => void;
@@ -31,6 +34,7 @@ export const useUIStore = create<UIState>()(
       theme: "light",
       density: "comfortable",
       locale: detectInitialLocale(),
+      accentColor: null,
       paletteOpen: false,
       // Closed by default: the dock is one click away (TopBar) but no longer
       // occupies space and repeats its greeting on every screen (ui.md §4).
@@ -39,6 +43,7 @@ export const useUIStore = create<UIState>()(
       setTheme: (theme) => set({ theme }),
       setDensity: (density) => set({ density }),
       setLocale: (locale) => set({ locale }),
+      setAccentColor: (accentColor) => set({ accentColor }),
       togglePalette: () => set((s) => ({ paletteOpen: !s.paletteOpen })),
       setPaletteOpen: (paletteOpen) => set({ paletteOpen }),
       toggleCopilot: () => set((s) => ({ copilotOpen: !s.copilotOpen })),
@@ -51,7 +56,12 @@ export const useUIStore = create<UIState>()(
     }),
     {
       name: "aura-ui",
-      partialize: (s) => ({ theme: s.theme, density: s.density, locale: s.locale }),
+      partialize: (s) => ({
+        theme: s.theme,
+        density: s.density,
+        locale: s.locale,
+        accentColor: s.accentColor,
+      }),
     },
   ),
 );

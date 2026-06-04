@@ -195,9 +195,10 @@ export function MessageComposer() {
         ))}
       </div>
 
-      <div className={cn("relative rounded-lg border p-2", mode === "note" ? "border-warning bg-surface" : "border-border bg-bg")}>
-        {/* Formatting toolbar (Slack/Teams/Telegram) */}
-        <div className="mb-1 flex items-center gap-0.5 border-b border-border pb-1">
+      <div className={cn("relative rounded-lg border p-2 focus-within:border-accent", mode === "note" ? "border-warning bg-surface" : "border-border bg-bg")}>
+        {/* Formatting toolbar — desktop only; markdown typing still works on
+            mobile, so this row is hidden there to keep the composer compact. */}
+        <div className="mb-1 hidden items-center gap-0.5 border-b border-border pb-1 sm:flex">
           <FmtBtn label={t("messaging.bold")} onClick={() => wrap("**")}><TextB size={16} aria-hidden /></FmtBtn>
           <FmtBtn label={t("messaging.italic")} onClick={() => wrap("_")}><TextItalic size={16} aria-hidden /></FmtBtn>
           <FmtBtn label={t("messaging.code")} onClick={() => wrap("`")}><Code size={16} aria-hidden /></FmtBtn>
@@ -242,10 +243,13 @@ export function MessageComposer() {
           onChange={(e) => update(e.target.value)}
           onKeyDown={onKeyDown}
           placeholder={placeholder}
-          className="w-full resize-none bg-transparent text-base text-fg outline-none placeholder:text-muted"
+          className="w-full resize-none bg-transparent text-base text-fg outline-none placeholder:text-muted focus-visible:shadow-none"
         />
 
         <div className="mt-1 flex items-center gap-1">
+          {/* Actions scroll horizontally on narrow screens so the composer
+              stays one short row; Send stays pinned on the right. */}
+          <div className="flex flex-1 items-center gap-1 overflow-x-auto">
           <Menu.Root>
             <Menu.Trigger
               className="inline-flex h-11 w-11 items-center justify-center rounded-md text-fg hover:bg-surface"
@@ -332,8 +336,9 @@ export function MessageComposer() {
               </Menu.Content>
             </Menu.Portal>
           </Menu.Root>
+          </div>
 
-          <span className="ml-auto hidden text-base text-muted sm:block">{t("messaging.enterHint")}</span>
+          <span className="hidden shrink-0 text-base text-muted sm:block">{t("messaging.enterHint")}</span>
           <IconButton label={t("messaging.send")} variant="primary" onClick={submit} disabled={!text.trim()}>
             <PaperPlaneRight size={18} aria-hidden />
           </IconButton>
@@ -359,13 +364,13 @@ function SmartRepliesInline({ onPick }: { onPick: (s: string) => void }) {
   const items = t("messaging.smart", { returnObjects: true }) as unknown as string[];
   if (!Array.isArray(items) || items.length === 0) return null;
   return (
-    <div className="flex flex-wrap items-center gap-2 px-1 pb-2">
-      <span className="inline-flex items-center gap-1 text-base text-muted">
+    <div className="flex flex-nowrap items-center gap-2 overflow-x-auto px-1 pb-2">
+      <span className="inline-flex shrink-0 items-center gap-1 text-base text-muted">
         <Sparkle size={14} className="text-accent" aria-hidden />
         {t("messaging.smartReplies")}
       </span>
       {items.map((s, i) => (
-        <button key={i} onClick={() => onPick(s)} className="rounded-full border border-border bg-surface px-3 py-1 text-base text-fg hover:bg-raised">
+        <button key={i} onClick={() => onPick(s)} className="shrink-0 rounded-full border border-border bg-surface px-3 py-1 text-base text-fg hover:bg-raised">
           {s}
         </button>
       ))}

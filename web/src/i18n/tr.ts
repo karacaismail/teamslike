@@ -174,6 +174,14 @@ export const tr: AppResources = {
     retry: "Tekrar dene",
     widget: "Bu bölüm yüklenemedi.",
   },
+  profile: {
+    settings: "Ayarlar",
+    appearance: "Görünüm",
+    accent: "Aksan rengi",
+    accentDefault: "Varsayılan",
+    pickColor: "Aksan rengi {{name}}",
+    roleLocked: "Rolün {{role}}. Yalnızca yöneticiler rolü değiştirebilir.",
+  },
   notif: {
     empty: "Her şey güncel",
     markAllRead: "Tümünü okundu işaretle",
