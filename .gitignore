@@ -15,5 +15,6 @@ web/playwright-report/
 .DS_Store
 *.log
 
-# Local dev helper (kept out of the app repo; lives in ~/.config/yap.zsh)
+# Local dev helpers (kept out of the app repo)
 yap.zsh
+yap-watch.sh

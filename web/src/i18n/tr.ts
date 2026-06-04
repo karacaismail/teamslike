@@ -366,6 +366,8 @@ export const tr: AppResources = {
     ephemeral: "Kaybolan",
     playbackSpeed: "Oynatma hızı",
     details: "Detaylar",
+    closePanel: "Paneli kapat",
+    typing: "{{name}} yazıyor…",
     priority: "Öncelik",
     priorityLevel: { urgent: "Acil", high: "Yüksek", medium: "Orta", low: "Düşük" },
     disappearing: "Kaybolan mesajlar",

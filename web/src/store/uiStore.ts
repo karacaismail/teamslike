@@ -32,7 +32,9 @@ export const useUIStore = create<UIState>()(
       density: "comfortable",
       locale: detectInitialLocale(),
       paletteOpen: false,
-      copilotOpen: true,
+      // Closed by default: the dock is one click away (TopBar) but no longer
+      // occupies space and repeats its greeting on every screen (ui.md §4).
+      copilotOpen: false,
       dirty: {},
       setTheme: (theme) => set({ theme }),
       setDensity: (density) => set({ density }),

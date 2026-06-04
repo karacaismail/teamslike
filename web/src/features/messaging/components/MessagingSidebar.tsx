@@ -210,17 +210,31 @@ export function MessagingSidebar() {
             {chans.map((c) => <ChatRow key={c.id} c={c} />)}
           </div>
         ) : pinned.length === 0 && (folder === "all" || folder === "channels") ? (
-          // Getting-started empty state (J10) — e.g. a workspace with no channels yet.
-          <EmptyState
-            icon={<Hash size={24} aria-hidden />}
-            title={t("messaging.noChannelsTitle")}
-            hint={t("messaging.noChannelsHint")}
-            action={
-              <Button onClick={() => setChannelDialog(true)}>
+          dms.length > 0 ? (
+            // DM'ler varken kanal boş-durumu KOMPAKT kalsın: büyük getting-started
+            // ekranı dolu DM listesinin üstünde "boş ama dolu" çelişkisi yaratıyordu.
+            <div>
+              <div className="px-2 pb-1 text-base font-semibold text-muted">{t("messaging.channels")}</div>
+              <button
+                onClick={() => setChannelDialog(true)}
+                className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-base text-accent hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              >
                 <Plus size={16} aria-hidden /> {t("messaging.newChannel")}
-              </Button>
-            }
-          />
+              </button>
+            </div>
+          ) : (
+            // Tamamen boş çalışma alanı: tam getting-started ekranı (J10).
+            <EmptyState
+              icon={<Hash size={24} aria-hidden />}
+              title={t("messaging.noChannelsTitle")}
+              hint={t("messaging.noChannelsHint")}
+              action={
+                <Button onClick={() => setChannelDialog(true)}>
+                  <Plus size={16} aria-hidden /> {t("messaging.newChannel")}
+                </Button>
+              }
+            />
+          )
         ) : null}
 
         {dms.length > 0 ? (

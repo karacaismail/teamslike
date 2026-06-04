@@ -4,9 +4,30 @@ import { useCallStore } from "../callStore";
 import { CONTACTS } from "../data";
 import { callerName, classifyCaller } from "../routing";
 import { fmtDuration } from "./CallStateChip";
-import { Badge, Card, IconButton, ListSkeleton } from "@/components/ui/primitives";
+import { Badge, Card, IconButton, Skeleton } from "@/components/ui/primitives";
 import { useFirstLoad } from "@/lib/useFirstLoad";
 import type { CallEndReason } from "../types";
+
+/** Loading placeholder shaped like a call row: direction icon + name/time +
+ *  the two round call-row actions (block, dial). */
+function CallHistorySkeleton({ label, rows = 5 }: { label: string; rows?: number }) {
+  return (
+    <ul className="divide-y divide-border" role="status" aria-live="polite">
+      <span className="sr-only">{label}</span>
+      {Array.from({ length: rows }).map((_, i) => (
+        <li key={i} className="flex items-center gap-3 py-2.5" aria-hidden>
+          <Skeleton className="h-5 w-5 shrink-0 rounded-sm" />
+          <div className="min-w-0 flex-1 space-y-1.5">
+            <Skeleton className="h-4 w-1/3" />
+            <Skeleton className="h-3 w-1/4" />
+          </div>
+          <Skeleton className="h-9 w-9 shrink-0 rounded-full" />
+          <Skeleton className="h-9 w-9 shrink-0 rounded-full" />
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 const reasonTone: Record<CallEndReason, "positive" | "danger" | "warning" | "accent"> = {
   completed: "positive",
@@ -35,7 +56,7 @@ export function CallHistory() {
     <Card>
       <h3 className="mb-2 text-base font-semibold text-fg">{t("phone.history.title")}</h3>
       {firstLoad ? (
-        <ListSkeleton rows={5} label={t("common.loading")} className="p-0" />
+        <CallHistorySkeleton label={t("common.loading")} />
       ) : history.length === 0 ? (
         <p className="text-base text-muted">{t("phone.history.empty")}</p>
       ) : (

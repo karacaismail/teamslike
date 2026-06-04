@@ -6,9 +6,29 @@ import { useTenantStore } from "@/store/tenantStore";
 import { slaState } from "../support";
 import { INBOXES } from "../data";
 import { contactName, PRIORITY, CHANNEL_ICON } from "./shared";
-import { Badge, EmptyState, ListSkeleton } from "@/components/ui/primitives";
+import { Badge, EmptyState, Skeleton } from "@/components/ui/primitives";
 import { useFirstLoad } from "@/lib/useFirstLoad";
 import { cn } from "@/lib/cn";
+
+/** Loading placeholder shaped like a conversation row: channel icon + name and
+ *  preview lines + a right-aligned status/unread block. */
+function ConversationListSkeleton({ label, rows = 7 }: { label: string; rows?: number }) {
+  return (
+    <div className="min-h-0 flex-1 divide-y divide-border" role="status" aria-live="polite">
+      <span className="sr-only">{label}</span>
+      {Array.from({ length: rows }).map((_, i) => (
+        <div key={i} className="flex items-center gap-3 px-3 py-2.5" aria-hidden>
+          <Skeleton className="h-4 w-4 shrink-0 rounded-sm" />
+          <div className="min-w-0 flex-1 space-y-1.5">
+            <Skeleton className="h-4 w-1/3" />
+            <Skeleton className="h-3 w-2/3" />
+          </div>
+          <Skeleton className="h-5 w-10 shrink-0 rounded-sm" />
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export function ConversationList() {
   const { t } = useTranslation();
@@ -26,8 +46,7 @@ export function ConversationList() {
     .filter((c) => !activeInboxId || c.inboxId === activeInboxId)
     .filter((c) => filterStatus === "all" || c.status === filterStatus);
 
-  if (firstLoad)
-    return <ListSkeleton rows={7} label={t("common.loading")} className="min-h-0 flex-1" />;
+  if (firstLoad) return <ConversationListSkeleton label={t("common.loading")} />;
 
   return (
     <ul className="min-h-0 flex-1 divide-y divide-border overflow-y-auto" aria-label={t("support.conversations")}>

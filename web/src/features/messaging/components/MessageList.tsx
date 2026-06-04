@@ -1,8 +1,28 @@
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 import { ChatCircle, MagnifyingGlass } from "@/lib/icons";
-import { EmptyState, ListSkeleton } from "@/components/ui/primitives";
+import { EmptyState, Skeleton } from "@/components/ui/primitives";
 import { useFirstLoad } from "@/lib/useFirstLoad";
+
+/** Loading placeholder matching the real (flat, Slack-style) message rows:
+ *  an author line above one or two body text lines — not bubbles, so it lines
+ *  up with what actually renders (ui.md A5). */
+function MessageListSkeleton({ label }: { label: string }) {
+  const rows = [["w-2/3", "w-1/2"], ["w-3/4"], ["w-1/2", "w-2/5"], ["w-3/5"], ["w-2/3"], ["w-1/2", "w-1/3"]];
+  return (
+    <div className="flex-1 space-y-5 overflow-hidden p-4" role="status" aria-live="polite">
+      <span className="sr-only">{label}</span>
+      {rows.map((lines, i) => (
+        <div key={i} className="space-y-1.5" aria-hidden>
+          <Skeleton className="h-3.5 w-28" />
+          {lines.map((w, j) => (
+            <Skeleton key={j} className={`h-3.5 ${w}`} />
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
 import { useMessagingStore } from "../store";
 import { UNREAD_FROM } from "../data";
 import { MessageBubble } from "./MessageBubble";
@@ -42,7 +62,7 @@ export function MessageList() {
   }, [messages, activeTopicId]);
 
   if (firstLoad) {
-    return <ListSkeleton rows={6} label={t("common.loading")} className="flex-1" />;
+    return <MessageListSkeleton label={t("common.loading")} />;
   }
 
   if (topLevel.length === 0) {

@@ -4,10 +4,41 @@ import { VideoCamera, Eye, Record, MagnifyingGlass, Sparkle, Archive } from "@/l
 import { useDocsStore } from "../docsStore";
 import { useAuthStore } from "@/store/authStore";
 import { MEMBER_NAMES } from "../data";
-import { Badge, Button, Card, EmptyState, ListSkeleton } from "@/components/ui/primitives";
+import { Badge, Button, Card, EmptyState, Skeleton } from "@/components/ui/primitives";
 import { useFirstLoad } from "@/lib/useFirstLoad";
 import { cn } from "@/lib/cn";
 import { ClipDetail } from "./ClipDetail";
+
+/** Loading placeholder matching the clips two-pane layout: thumbnail rows on
+ *  the left, a large video-preview block on the right. */
+function ClipsSkeleton({ label }: { label: string }) {
+  return (
+    <div className="grid gap-4 lg:grid-cols-[22rem_1fr]" role="status" aria-live="polite">
+      <span className="sr-only">{label}</span>
+      <Card>
+        <ul className="space-y-2" aria-hidden>
+          {Array.from({ length: 6 }).map((_, i) => (
+            <li key={i} className="flex items-center gap-2 rounded-md border border-border p-2">
+              <Skeleton className="h-9 w-12 shrink-0 rounded-sm" />
+              <div className="min-w-0 flex-1 space-y-1.5">
+                <Skeleton className="h-4 w-2/3" />
+                <Skeleton className="h-3 w-1/2" />
+              </div>
+            </li>
+          ))}
+        </ul>
+      </Card>
+      <Card>
+        <div className="space-y-3" aria-hidden>
+          <Skeleton className="aspect-video w-full rounded-lg" />
+          <Skeleton className="h-5 w-1/3" />
+          <Skeleton className="h-4 w-2/3" />
+          <Skeleton className="h-4 w-1/2" />
+        </div>
+      </Card>
+    </div>
+  );
+}
 
 const fmt = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
@@ -35,16 +66,7 @@ export function ClipsList() {
   const selected = clips.find((c) => c.id === selectedId) ?? list[0] ?? null;
 
   if (firstLoad) {
-    return (
-      <div className="grid gap-4 lg:grid-cols-[22rem_1fr]">
-        <Card>
-          <ListSkeleton rows={6} label={t("common.loading")} className="p-0" />
-        </Card>
-        <Card>
-          <ListSkeleton rows={3} className="p-0" />
-        </Card>
-      </div>
-    );
+    return <ClipsSkeleton label={t("common.loading")} />;
   }
 
   return (

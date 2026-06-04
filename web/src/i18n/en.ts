@@ -364,6 +364,8 @@ export const en = {
     ephemeral: "Disappearing",
     playbackSpeed: "Playback speed",
     details: "Details",
+    closePanel: "Close panel",
+    typing: "{{name}} is typing…",
     priority: "Priority",
     priorityLevel: { urgent: "Urgent", high: "High", medium: "Medium", low: "Low" },
     disappearing: "Disappearing messages",

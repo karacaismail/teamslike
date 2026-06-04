@@ -4,7 +4,8 @@ import { Plus, GridFour, CalendarBlank, ChartBar, ChartLineUp, Trash, X } from "
 import { useDocsStore } from "../docsStore";
 import { MEMBER_NAMES } from "../data";
 import { computeCell, columnTotal } from "../tables";
-import { Button, Card } from "@/components/ui/primitives";
+import { Button, Card, Skeleton } from "@/components/ui/primitives";
+import { useFirstLoad } from "@/lib/useFirstLoad";
 import { cn } from "@/lib/cn";
 import { CalendarView } from "./CalendarView";
 import { GanttView } from "./GanttView";
@@ -14,6 +15,32 @@ import type { ColumnType, TableColumn, TableRow } from "../types";
 const NEW_COL_TYPES: ColumnType[] = ["text", "number", "date", "person"];
 
 const MEMBERS = Object.entries(MEMBER_NAMES); // [id, name]
+
+/** Loading placeholder shaped like the table: a view-tab strip over a header
+ *  row and a few body rows of cells (not generic contact rows). */
+function TableSkeleton({ label }: { label: string }) {
+  return (
+    <Card>
+      <div role="status" aria-live="polite">
+        <span className="sr-only">{label}</span>
+        <div className="mb-3 flex gap-1" aria-hidden>
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} className="h-9 w-20 rounded-md" />
+          ))}
+        </div>
+        <div className="space-y-2" aria-hidden>
+          {Array.from({ length: 6 }).map((_, r) => (
+            <div key={r} className="grid grid-cols-4 gap-2">
+              {Array.from({ length: 4 }).map((_, c) => (
+                <Skeleton key={c} className="h-9" />
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </Card>
+  );
+}
 
 /**
  * Relational table with live, editable cells + a no-`eval` formula engine and a
@@ -32,9 +59,11 @@ export function TableGridView() {
   const [view, setView] = React.useState<"grid" | "calendar" | "gantt" | "hill">("grid");
   const [newColName, setNewColName] = React.useState("");
   const [newColType, setNewColType] = React.useState<ColumnType>("text");
+  const firstLoad = useFirstLoad();
 
   const table = tables.find((tb) => tb.id === activeTableId) ?? tables[0];
   if (!table) return null;
+  if (firstLoad) return <TableSkeleton label={t("common.loading")} />;
 
   const inputBase =
     "h-9 w-full min-w-[6rem] rounded-md border border-border bg-bg px-2 text-base text-fg outline-none focus-visible:ring-2 focus-visible:ring-accent";

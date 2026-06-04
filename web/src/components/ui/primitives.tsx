@@ -158,7 +158,7 @@ export function Card({
   return (
     <Tag
       className={cn(
-        "rounded-lg border border-border bg-raised p-5 shadow-sm",
+        "rounded-lg border border-border bg-raised p-5 elev-1",
         className,
       )}
     >
