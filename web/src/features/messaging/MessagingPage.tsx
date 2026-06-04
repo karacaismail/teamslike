@@ -1,10 +1,11 @@
 import * as React from "react";
 import { Forbidden } from "@/components/ui/Forbidden";
 import { useTranslation } from "react-i18next";
-import { Prohibit } from "@/lib/icons";
+import { Prohibit, CaretLeft } from "@/lib/icons";
 import { useAuthStore } from "@/store/authStore";
 import { useTenantStore } from "@/store/tenantStore";
 import { useUrlSelection } from "@/lib/useUrlSelection";
+import { useIsMobile } from "@/lib/useMediaQuery";
 import { useMessagingStore } from "./store";
 import { CommunitiesBar } from "./components/CommunitiesBar";
 import { MessagingSidebar } from "./components/MessagingSidebar";
@@ -47,22 +48,49 @@ export function MessagingPage() {
     // Run on workspace change only; channel list is static seed.
   }, [workspaceId]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Mobile is single-pane: show the channel list OR the open conversation, never
+  // both squeezed side by side (M13). Selecting a channel/topic reveals the
+  // conversation; a back control returns to the list.
+  const isMobile = useIsMobile();
+  const [mobilePane, setMobilePane] = React.useState<"list" | "conversation">("conversation");
+  React.useEffect(() => {
+    if (isMobile) setMobilePane("conversation");
+  }, [isMobile, activeChannelId, activeTopicId]);
+
   if (!can("messaging.view")) {
     return <Forbidden />;
   }
 
+  const showList = !isMobile || mobilePane === "list";
+  const showConversation = !isMobile || mobilePane === "conversation";
+
   return (
     <div className="flex h-full min-h-0">
-      <CommunitiesBar />
-      <MessagingSidebar />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <StoriesBar />
-        <ChannelHeader />
-        <PinnedBar />
-        <MessageList />
-        <TypingIndicator />
-        <MessageComposer />
-      </div>
+      {showList ? (
+        <>
+          <CommunitiesBar />
+          <MessagingSidebar />
+        </>
+      ) : null}
+      {showConversation ? (
+        <div className="flex min-w-0 flex-1 flex-col">
+          {isMobile ? (
+            <button
+              type="button"
+              onClick={() => setMobilePane("list")}
+              className="flex h-11 shrink-0 items-center gap-1 border-b border-border px-2 text-base text-fg md:hidden"
+            >
+              <CaretLeft size={20} aria-hidden /> {t("common.back")}
+            </button>
+          ) : null}
+          <StoriesBar />
+          <ChannelHeader />
+          <PinnedBar />
+          <MessageList />
+          <TypingIndicator />
+          <MessageComposer />
+        </div>
+      ) : null}
       {threadOpen ? <ThreadPanel /> : null}
       {detailsOpen ? <DetailsPanel /> : null}
     </div>

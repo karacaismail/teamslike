@@ -5,6 +5,7 @@ export const en = {
   },
   nav: {
     primary: "Primary navigation",
+    more: "More",
     dashboard: "Dashboard",
     messaging: "Messaging",
     meetings: "Meetings",
@@ -208,6 +209,7 @@ export const en = {
     delete: "Delete",
     undo: "Undo",
     close: "Close",
+    back: "Back",
   },
   messaging: {
     channels: "Channels",

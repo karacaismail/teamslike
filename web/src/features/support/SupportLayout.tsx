@@ -1,10 +1,11 @@
 import * as React from "react";
 import { Forbidden } from "@/components/ui/Forbidden";
 import { useTranslation } from "react-i18next";
-import { Prohibit, Tray, Robot, Gauge, Brain } from "@/lib/icons";
+import { Prohibit, Tray, Robot, Gauge, Brain, CaretLeft } from "@/lib/icons";
 import { useAuthStore } from "@/store/authStore";
 import { useTenantStore } from "@/store/tenantStore";
 import { useUrlSelection } from "@/lib/useUrlSelection";
+import { useIsMobile } from "@/lib/useMediaQuery";
 import { Card } from "@/components/ui/primitives";
 import { cn } from "@/lib/cn";
 import { useTabKeys } from "@/lib/useTabKeys";
@@ -58,6 +59,19 @@ export function SupportLayout() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [workspaceId]);
 
+  // Mobile inbox is single-pane (M13): the conversation list OR the open
+  // ticket, not both. Opens on the list; selecting a conversation slides to it.
+  const isMobile = useIsMobile();
+  const [mobilePane, setMobilePane] = React.useState<"list" | "conversation">("list");
+  const firstSelect = React.useRef(true);
+  React.useEffect(() => {
+    if (firstSelect.current) {
+      firstSelect.current = false;
+      return;
+    }
+    setMobilePane("conversation");
+  }, [activeConversationId]);
+
   if (!can("support.view")) {
     return <Forbidden />;
   }
@@ -85,15 +99,40 @@ export function SupportLayout() {
       </div>
 
       {view === "inbox" ? (
-        <div className="flex min-h-0 flex-1">
-          <InboxNav />
-          <div className="flex w-full max-w-[20rem] shrink-0 flex-col border-r border-border bg-bg md:w-80 md:max-w-none">
-            <div className="border-b border-border px-3 py-2 text-base font-semibold text-fg">{t("nav.support")}</div>
-            <ConversationList />
+        isMobile ? (
+          <div className="flex min-h-0 flex-1">
+            {mobilePane === "list" ? (
+              <>
+                <InboxNav />
+                <div className="flex min-w-0 flex-1 flex-col bg-bg">
+                  <div className="border-b border-border px-3 py-2 text-base font-semibold text-fg">{t("nav.support")}</div>
+                  <ConversationList />
+                </div>
+              </>
+            ) : (
+              <div className="flex min-w-0 flex-1 flex-col">
+                <button
+                  type="button"
+                  onClick={() => setMobilePane("list")}
+                  className="flex h-11 shrink-0 items-center gap-1 border-b border-border px-2 text-base text-fg"
+                >
+                  <CaretLeft size={20} aria-hidden /> {t("common.back")}
+                </button>
+                <ConversationView />
+              </div>
+            )}
           </div>
-          <ConversationView />
-          <ContactPanel />
-        </div>
+        ) : (
+          <div className="flex min-h-0 flex-1">
+            <InboxNav />
+            <div className="flex w-full max-w-[20rem] shrink-0 flex-col border-r border-border bg-bg md:w-80 md:max-w-none">
+              <div className="border-b border-border px-3 py-2 text-base font-semibold text-fg">{t("nav.support")}</div>
+              <ConversationList />
+            </div>
+            <ConversationView />
+            <ContactPanel />
+          </div>
+        )
       ) : view === "automation" ? (
         <AutomationView />
       ) : view === "workforce" ? (

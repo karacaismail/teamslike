@@ -7,6 +7,7 @@ export const tr: AppResources = {
   },
   nav: {
     primary: "Ana gezinme",
+    more: "Daha fazla",
     dashboard: "Panel",
     messaging: "Mesajlaşma",
     meetings: "Toplantılar",
@@ -210,6 +211,7 @@ export const tr: AppResources = {
     delete: "Sil",
     undo: "Geri al",
     close: "Kapat",
+    back: "Geri",
   },
   messaging: {
     channels: "Kanallar",

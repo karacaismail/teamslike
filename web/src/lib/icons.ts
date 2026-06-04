@@ -196,3 +196,4 @@ export { X } from "@phosphor-icons/react/X";
 export { XCircle } from "@phosphor-icons/react/XCircle";
 export { Table } from "@phosphor-icons/react/Table";
 export { GridFour } from "@phosphor-icons/react/GridFour";
+export { List } from "@phosphor-icons/react/List";

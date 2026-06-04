@@ -41,7 +41,8 @@ export function TopBar() {
     >
       <div className="flex items-center gap-2">
         <Sparkle size={26} weight="fill" className="text-accent" aria-hidden />
-        <span className="text-xl font-bold text-fg">{t("app.name")}</span>
+        {/* Wordmark yields to the search field on the narrowest screens (M6). */}
+        <span className="hidden text-xl font-bold text-fg sm:inline">{t("app.name")}</span>
       </div>
 
       <div className="hidden md:block">
@@ -55,7 +56,9 @@ export function TopBar() {
       >
         <MagnifyingGlass size={18} aria-hidden />
         <span className="flex-1 truncate text-left">{t("shell.searchPlaceholder")}</span>
-        <Kbd>⌘K</Kbd>
+        <span className="hidden sm:inline-flex">
+          <Kbd>⌘K</Kbd>
+        </span>
       </button>
 
       <NotificationBell />

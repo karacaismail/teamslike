@@ -3,6 +3,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { TopBar } from "./TopBar";
 import { PrimaryNav } from "./PrimaryNav";
+import { MobileNav } from "./MobileNav";
 import { CopilotDock } from "./CopilotDock";
 import { CommandPalette } from "./CommandPalette";
 import { UnsavedNavGuard } from "./UnsavedNavGuard";
@@ -73,7 +74,7 @@ export function AppShell() {
           <aside className="hidden w-64 shrink-0 border-r border-border bg-raised md:block">
             <PrimaryNav />
           </aside>
-          <main id="main" tabIndex={-1} className="min-w-0 flex-1 overflow-y-auto bg-bg">
+          <main id="main" tabIndex={-1} className="min-w-0 flex-1 overflow-y-auto bg-bg pb-16 md:pb-0">
             {/* Keyed by route so a render error on one page is isolated to the
                 content area AND clears when the user navigates away — no full
                 reload needed (gemini §3.3). */}
@@ -88,6 +89,7 @@ export function AppShell() {
       <UnsavedNavGuard />
       <ToastViewport />
       <ActiveCallBar />
+      <MobileNav />
     </TooltipProvider>
   );
 }

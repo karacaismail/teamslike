@@ -66,10 +66,18 @@ export function CopilotDock() {
   };
 
   return (
-    <aside
-      aria-label={t("copilot.title")}
-      className="flex h-full w-80 flex-col border-l border-border bg-surface"
-    >
+    <>
+      {/* Mobile: dim the rest and present the dock as a full-height overlay so
+          it never squeezes the page content (M2). Desktop: inline side column. */}
+      <div
+        className="fixed inset-0 z-40 bg-overlay md:hidden"
+        onClick={() => setCopilotOpen(false)}
+        aria-hidden
+      />
+      <aside
+        aria-label={t("copilot.title")}
+        className="fixed inset-y-0 right-0 z-50 flex h-full w-full max-w-md flex-col border-l border-border bg-surface shadow-2xl md:static md:z-auto md:w-80 md:max-w-none md:shadow-none"
+      >
       <header className="flex items-center gap-2 border-b border-border p-3">
         <Sparkle size={22} weight="fill" className="text-accent" aria-hidden />
         <div className="flex-1">
@@ -167,6 +175,7 @@ export function CopilotDock() {
           </IconButton>
         </div>
       </div>
-    </aside>
+      </aside>
+    </>
   );
 }

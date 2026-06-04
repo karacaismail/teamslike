@@ -74,7 +74,7 @@ export function ActiveCallBar() {
   const isSupervisor = can("admin.access");
 
   return (
-    <div className="fixed bottom-4 left-1/2 z-50 w-[min(46rem,94vw)] -translate-x-1/2 space-y-2">
+    <div className="fixed bottom-20 left-1/2 z-50 w-[min(46rem,94vw)] -translate-x-1/2 space-y-2 md:bottom-4">
       {/* Parked calls */}
       {parked.length > 0 ? (
         <div className="flex flex-wrap items-center gap-2 rounded-lg border border-border bg-raised px-3 py-2 shadow-lg">
