@@ -13,8 +13,9 @@ async function login(page: import("@playwright/test").Page) {
 test("mobile: sidebar collapses and the bottom nav drives navigation", async ({ page }) => {
   await login(page);
 
-  // The desktop sidebar is hidden below md…
-  await expect(page.locator("aside")).toBeHidden();
+  // The desktop sidebar is hidden below md… (target it specifically — the
+  // copilot dock is also an <aside>, so a bare aside locator is ambiguous).
+  await expect(page.getByTestId("desktop-sidebar")).toBeHidden();
 
   // …and the bottom nav takes over.
   const moreBtn = page.getByRole("button", { name: "More" });

@@ -71,7 +71,10 @@ export function AppShell() {
       <div className="flex h-screen flex-col">
         <TopBar />
         <div className="flex min-h-0 flex-1">
-          <aside className="hidden w-64 shrink-0 border-r border-border bg-raised md:block">
+          <aside
+            data-testid="desktop-sidebar"
+            className="hidden w-64 shrink-0 border-r border-border bg-raised md:block"
+          >
             <PrimaryNav />
           </aside>
           <main id="main" tabIndex={-1} className="min-w-0 flex-1 overflow-y-auto bg-bg pb-16 md:pb-0">
